@@ -1,0 +1,429 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ Authentication & Users ============
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  avatar    String?
+  role      UserRole @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student?
+  faculty Faculty?
+
+  @@map("users")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  FACULTY
+  STUDENT
+  STAFF
+  ACCOUNTANT
+  LIBRARIAN
+  HOSTEL_WARDEN
+  TRANSPORT_MANAGER
+}
+
+// ============ Academic Structure ============
+
+model Department {
+  id        String    @id @default(cuid())
+  name      String
+  code      String    @unique
+  headId    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  programs Program[]
+  faculty  Faculty[]
+
+  @@map("departments")
+}
+
+model Program {
+  id           String      @id @default(cuid())
+  name         String
+  code         String      @unique
+  departmentId String
+  duration     Int // Duration in semesters
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  department   Department  @relation(fields: [departmentId], references: [id])
+  students     Student[]
+  sections     Section[]
+  feeStructures FeeStructure[]
+
+  @@map("programs")
+}
+
+model Semester {
+  id           String   @id @default(cuid())
+  name         String
+  academicYear String
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sections      Section[]
+  enrollments   Enrollment[]
+  timeSlots     TimeSlot[]
+  feeStructures FeeStructure[]
+
+  @@map("semesters")
+}
+
+model Section {
+  id         String   @id @default(cuid())
+  name       String
+  programId  String
+  semesterId String
+  capacity   Int
+  strength   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  program     Program      @relation(fields: [programId], references: [id])
+  semester    Semester     @relation(fields: [semesterId], references: [id])
+  students    Student[]
+  enrollments Enrollment[]
+  timeSlots   TimeSlot[]
+
+  @@map("sections")
+}
+
+model Course {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  name          String
+  credits       Int
+  type          CourseType
+  description   String?
+  syllabusUrl   String?
+  prerequisites String[] // Array of course IDs
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enrollments Enrollment[]
+  timeSlots   TimeSlot[]
+  exams       Exam[]
+
+  @@map("courses")
+}
+
+enum CourseType {
+  THEORY
+  LAB
+  BOTH
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  name      String
+  building  String
+  capacity  Int
+  type      RoomType
+  features  String[] // Array of features like "projector", "whiteboard", etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  timeSlots TimeSlot[]
+  exams     Exam[]
+
+  @@map("rooms")
+}
+
+enum RoomType {
+  LECTURE
+  LAB
+  SEMINAR
+}
+
+// ============ Students ============
+
+model Student {
+  id            String        @id @default(cuid())
+  rollNumber    String        @unique
+  userId        String        @unique
+  programId     String
+  semesterId    String?
+  sectionId     String?
+  admissionDate DateTime
+  status        StudentStatus @default(ACTIVE)
+  dateOfBirth   DateTime?
+  gender        String?
+  phone         String?
+  address       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id])
+  program      Program       @relation(fields: [programId], references: [id])
+  section      Section?      @relation(fields: [sectionId], references: [id])
+  enrollments  Enrollment[]
+  attendances  Attendance[]
+  marks        Mark[]
+  feePayments  FeePayment[]
+
+  @@map("students")
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+  SUSPENDED
+}
+
+model Enrollment {
+  id         String   @id @default(cuid())
+  studentId  String
+  courseId   String
+  semesterId String
+  sectionId  String
+  enrolledAt DateTime @default(now())
+  status     EnrollmentStatus @default(ACTIVE)
+
+  student  Student  @relation(fields: [studentId], references: [id])
+  course   Course   @relation(fields: [courseId], references: [id])
+  semester Semester @relation(fields: [semesterId], references: [id])
+  section  Section  @relation(fields: [sectionId], references: [id])
+
+  @@unique([studentId, courseId, semesterId])
+  @@map("enrollments")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  DROPPED
+  COMPLETED
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  studentId String
+  courseId  String
+  date      DateTime
+  status    AttendanceStatus
+  remarks   String?
+  createdAt DateTime         @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+  course  Course  @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId, date])
+  @@map("attendances")
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+// ============ Faculty ============
+
+model Faculty {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  departmentId     String
+  designation      String
+  maxHoursPerWeek  Int      @default(20)
+  subjects         String[] // Array of subject codes they can teach
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user        User                @relation(fields: [userId], references: [id])
+  department  Department          @relation(fields: [departmentId], references: [id])
+  preferences FacultyPreference?
+  timeSlots   TimeSlot[]
+
+  @@map("faculty")
+}
+
+model FacultyPreference {
+  id             String   @id @default(cuid())
+  facultyId      String   @unique
+  preferredDays  String[] // Array of days
+  preferredTimes String[] // Array of time ranges
+  blockedSlots   Json[]   // Array of {day, time} objects
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  faculty Faculty @relation(fields: [facultyId], references: [id])
+
+  @@map("faculty_preferences")
+}
+
+// ============ Timetable ============
+
+model TimeSlot {
+  id         String       @id @default(cuid())
+  day        String
+  startTime  String
+  endTime    String
+  courseId   String
+  facultyId  String
+  roomId     String
+  sectionId  String
+  semesterId String
+  type       SlotType
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  course   Course   @relation(fields: [courseId], references: [id])
+  faculty  Faculty  @relation(fields: [facultyId], references: [id])
+  room     Room     @relation(fields: [roomId], references: [id])
+  section  Section  @relation(fields: [sectionId], references: [id])
+  semester Semester @relation(fields: [semesterId], references: [id])
+
+  @@unique([day, startTime, facultyId, semesterId])
+  @@unique([day, startTime, roomId, semesterId])
+  @@map("time_slots")
+}
+
+enum SlotType {
+  LECTURE
+  LAB
+  TUTORIAL
+}
+
+// ============ Examinations ============
+
+model Exam {
+  id         String   @id @default(cuid())
+  courseId   String
+  type       ExamType
+  date       DateTime
+  startTime  String
+  endTime    String
+  roomId     String
+  maxMarks   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id])
+  room   Room   @relation(fields: [roomId], references: [id])
+  marks  Mark[]
+
+  @@map("exams")
+}
+
+enum ExamType {
+  MIDTERM
+  FINAL
+  QUIZ
+}
+
+model Mark {
+  id        String   @id @default(cuid())
+  studentId String
+  examId    String
+  marks     Float
+  grade     String?
+  remarks   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id])
+  exam    Exam    @relation(fields: [examId], references: [id])
+
+  @@unique([studentId, examId])
+  @@map("marks")
+}
+
+// ============ Fees ============
+
+model FeeStructure {
+  id         String   @id @default(cuid())
+  name       String
+  programId  String
+  semesterId String
+  amount     Float
+  dueDate    DateTime
+  components Json[]   // Array of {name, amount} objects
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  program  Program  @relation(fields: [programId], references: [id])
+  semester Semester @relation(fields: [semesterId], references: [id])
+
+  @@map("fee_structures")
+}
+
+model FeePayment {
+  id            String        @id @default(cuid())
+  studentId     String
+  amount        Float
+  paymentDate   DateTime
+  paymentMethod PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  transactionId String?
+  remarks       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@map("fee_payments")
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+  ONLINE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ============ Admissions ============
+
+model Admission {
+  id                String          @id @default(cuid())
+  applicationNumber String          @unique
+  studentName       String
+  email             String
+  phone             String
+  programApplied    String
+  status            AdmissionStatus @default(PENDING)
+  applicationDate   DateTime        @default(now())
+  documents         Json[]          // Array of document objects
+  remarks           String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@map("admissions")
+}
+
+enum AdmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  INTERVIEW_SCHEDULED
+  WAITLISTED
+}

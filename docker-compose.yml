@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: unims-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: unims
+      POSTGRES_PASSWORD: unims_password_change_in_production
+      POSTGRES_DB: unims
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - unims-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: unims-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - unims-network
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: unims-app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://unims:unims_password_change_in_production@postgres:5432/unims
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - unims-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  unims-network:
+    driver: bridge
