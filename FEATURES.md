@@ -1,4 +1,4 @@
-# UniMS - Complete Feature List
+# DPS - Complete Feature List
 
 ## ✅ Implemented Features
 

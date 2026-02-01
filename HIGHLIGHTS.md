@@ -1,4 +1,4 @@
-# UniMS - Project Highlights
+# DPS - Project Highlights
 
 ## 🌟 What Makes This Special
 
@@ -303,7 +303,7 @@ Use this project to **understand**:
 
 ## 📊 Comparison to Alternatives
 
-| Feature | UniMS | Typical OSS | Commercial |
+| Feature | DPS | Typical OSS | Commercial |
 |---------|-------|-------------|------------|
 | Modern UI | ✅ Next.js 15 | ❌ Old tech | ✅ Modern |
 | Timetable DnD | ✅ Advanced | ❌ Basic | ✅ Advanced |

@@ -1,4 +1,4 @@
-# UniMS Implementation Plan
+# DPS Implementation Plan
 
 ## Phase 1: Foundation (Weeks 1-2)
 

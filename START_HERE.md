@@ -1,4 +1,4 @@
-# 🎓 Welcome to UniMS - University Management System
+# 🎓 Welcome to DPS - University Management System
 
 ## 👋 New Here? Start Here!
 
