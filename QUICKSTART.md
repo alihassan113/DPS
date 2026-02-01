@@ -1,4 +1,4 @@
-# UniMS - Quick Start Guide
+# DPS - Quick Start Guide
 
 ## 🚀 Get Started in 5 Minutes
 
@@ -52,11 +52,11 @@ Visit [http://localhost:3000](http://localhost:3000)
 npm install
 
 # 2. Create PostgreSQL database
-createdb unims
+createdb dps
 
 # 3. Copy and configure .env
 cp .env.example .env
-# Edit .env and set: DATABASE_URL="postgresql://user:password@localhost:5432/unims"
+# Edit .env and set: DATABASE_URL="postgresql://user:password@localhost:5432/dps"
 
 # 4. Generate Prisma client
 npm run db:generate

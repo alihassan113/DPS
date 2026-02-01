@@ -1,4 +1,4 @@
-# UniMS Documentation Index
+# DPS Documentation Index
 
 ## 📚 Documentation Overview
 

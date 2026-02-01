@@ -1,4 +1,4 @@
-# UniMS - University Management System
+# DPS - University Management System
 
 A comprehensive, production-ready University Management System with advanced timetable scheduling, student management, and enterprise-grade features.
 
@@ -287,10 +287,10 @@ vercel --prod
 
 ```bash
 # Build image
-docker build -t unims .
+docker build -t dps .
 
 # Run container
-docker run -p 3000:3000 unims
+docker run -p 3000:3000 dps
 ```
 
 ### Docker Compose
@@ -367,7 +367,7 @@ MIT License - see LICENSE file
 
 ## 📞 Support
 
-For support, email support@unims.edu or join our Slack channel.
+For support, email support@dps.edu or join our Slack channel.
 
 ## 🎓 Credits
 

@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "UniMS - University Management System",
-  description: "Comprehensive University Management System with advanced timetable scheduling, student management, and more.",
+  title: "DPS - University Management System",
+  description: "Comprehensive DPS University Management System with advanced timetable scheduling, student management, and more.",
 };
 
 export default function RootLayout({

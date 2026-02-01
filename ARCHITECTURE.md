@@ -1,4 +1,4 @@
-# UniMS System Architecture
+# DPS System Architecture
 
 ## High-Level Architecture
 

@@ -4,40 +4,40 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: unims-db
+    container_name: dps-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: unims
-      POSTGRES_PASSWORD: unims_password_change_in_production
-      POSTGRES_DB: unims
+      POSTGRES_USER: dps
+      POSTGRES_PASSWORD: dps_password_change_in_production
+      POSTGRES_DB: dps
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - unims-network
+      - dps-network
 
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: unims-redis
+    container_name: dps-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - unims-network
+      - dps-network
 
   # Next.js Application
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: unims-app
+    container_name: dps-app
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://unims:unims_password_change_in_production@postgres:5432/unims
+      DATABASE_URL: postgresql://dps:dps_password_change_in_production@postgres:5432/dps
       REDIS_URL: redis://redis:6379
       NODE_ENV: production
     ports:
@@ -46,12 +46,12 @@ services:
       - postgres
       - redis
     networks:
-      - unims-network
+      - dps-network
 
 volumes:
   postgres_data:
   redis_data:
 
 networks:
-  unims-network:
+  dps-network:
     driver: bridge

@@ -1,4 +1,4 @@
-# UniMS - Project Summary
+# DPS - Project Summary
 
 ## 🎉 Project Delivered
 
@@ -186,7 +186,7 @@ Comprehensive Prisma schema covering all modules:
 "db:studio": "prisma studio"       // Database GUI
 "docker:up": "docker-compose up -d"    // Start containers
 "docker:down": "docker-compose down"   // Stop containers
-"docker:build": "docker build -t unims ." // Build image
+"docker:build": "docker build -t dps ." // Build image
 ```
 
 #### Environment Configuration
@@ -441,7 +441,7 @@ This system is **ready for commercial use** as:
 
 ## 🏆 Conclusion
 
-**UniMS** is a **professional, production-ready University Management System** that exceeds expectations in:
+**DPS** is a **professional, production-ready University Management System** that exceeds expectations in:
 
 1. **Code Quality**: TypeScript, best practices, clean architecture
 2. **Features**: Especially the world-class timetable module

@@ -355,7 +355,7 @@ export function SidebarNav({ isCollapsed, onClose }: SidebarNavProps) {
           <div className="flex items-center gap-2">
             <GraduationCap className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="text-lg font-bold">UniMS</h1>
+              <h1 className="text-lg font-bold">DPS</h1>
               <p className="text-xs text-muted-foreground">
                 University Management
               </p>
@@ -403,7 +403,7 @@ export function SidebarNav({ isCollapsed, onClose }: SidebarNavProps) {
             <div className="flex-1 overflow-hidden">
               <p className="text-sm font-medium truncate">Admin User</p>
               <p className="text-xs text-muted-foreground truncate">
-                admin@unims.edu
+                admin@dps.edu
               </p>
             </div>
           </div>
